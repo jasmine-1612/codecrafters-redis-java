@@ -21,10 +21,17 @@ public class Main {
             OutputStream outputStream = clientSocket.getOutputStream();
 
             byte[] buffer = new byte[1024];
+            int bytesRead;
 
-            while (inputStream.read(buffer) != -1) {
-                outputStream.write("+PONG\r\n".getBytes());
-                outputStream.flush();
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                String request = new String(buffer, 0, bytesRead);
+
+                int index = 0;
+                while ((index = request.indexOf("PING", index)) != -1) {
+                    outputStream.write("+PONG\r\n".getBytes());
+                    outputStream.flush();
+                    index += 4;
+                }
             }
 
         } catch (IOException e) {
